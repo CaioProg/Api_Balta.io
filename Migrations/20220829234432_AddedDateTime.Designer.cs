@@ -3,14 +3,16 @@ using System;
 using MeuTodo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MeuTodo.Migrations
 {
     [DbContext(typeof(AddDbContext))]
-    partial class AddDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220829234432_AddedDateTime")]
+    partial class AddedDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
