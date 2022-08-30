@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MeuTodo.Data
 {
-    public class AddDbContext : DbContext 
+    public class AppDbContext : DbContext 
     {
         public DbSet<Todo> Todos { get; set; }
 

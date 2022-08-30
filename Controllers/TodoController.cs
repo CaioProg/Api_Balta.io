@@ -1,7 +1,9 @@
 ﻿using MeuTodo.Data;
 using MeuTodo.Models;
+using MeuTodo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace MeuTodo.Controllers
         [HttpGet]
         [Route(template:"todos")]
         public async Task<IActionResult> GetAsync(
-            [FromServices] AddDbContext context)
+            [FromServices] AppDbContext context)
         {
             var todos = await context
                 .Todos
@@ -27,7 +29,7 @@ namespace MeuTodo.Controllers
         [HttpGet]
         [Route(template: "todos/{id}")]
         public async Task<IActionResult> GetByIdAsync(
-            [FromServices] AddDbContext context,
+            [FromServices] AppDbContext context,
             [FromRoute] int id)
         {
             var todo = await context
@@ -38,6 +40,33 @@ namespace MeuTodo.Controllers
             return todo == null 
                 ? NotFound() 
                 : Ok(todo);
+        }
+
+        [HttpPost(template:"todos")]
+        public async Task<IActionResult> PostAsync(
+            [FromServices] AppDbContext context,
+            [FromBody] CreateTodoViewModel model)
+        {
+            if(!ModelState.IsValid)
+                return BadRequest();
+
+            var todo = new Todo
+            {
+                Date = DateTime.Now,
+                Done = false,
+                Title = model.Title
+            };
+
+            try
+            {
+                await context.Todos.AddAsync(todo);
+                await context.SaveChangesAsync();
+                return Created(uri:$"v1/todos/{todo.Id}", todo);
+            }
+            catch (Exception e)
+            { 
+                return BadRequest();
+            }
         }
     }
 }
