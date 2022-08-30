@@ -14,7 +14,7 @@ namespace MeuTodo.Controllers
 
         [HttpGet]
         [Route(template:"todos")]
-        public async Task<IActionResult> Get(
+        public async Task<IActionResult> GetAsync(
             [FromServices] AddDbContext context)
         {
             var todos = await context
@@ -22,6 +22,22 @@ namespace MeuTodo.Controllers
                 .AsNoTracking()
                 .ToListAsync();
             return Ok(todos);
+        }
+
+        [HttpGet]
+        [Route(template: "todos/{id}")]
+        public async Task<IActionResult> GetByIdAsync(
+            [FromServices] AddDbContext context,
+            [FromRoute] int id)
+        {
+            var todo = await context
+                .Todos
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+            
+            return todo == null 
+                ? NotFound() 
+                : Ok(todo);
         }
     }
 }
