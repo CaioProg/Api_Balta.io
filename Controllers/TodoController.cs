@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 namespace MeuTodo.Controllers
 {
     [ApiController]
-    [Route(template:"v1")]
+    [Route(template: "v1")]
     public class TodoController : ControllerBase
     {
 
         [HttpGet]
-        [Route(template:"todos")]
+        [Route(template: "todos")]
         public async Task<IActionResult> GetAsync(
             [FromServices] AppDbContext context)
         {
@@ -36,18 +36,18 @@ namespace MeuTodo.Controllers
                 .Todos
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
-            
-            return todo == null 
-                ? NotFound() 
+
+            return todo == null
+                ? NotFound()
                 : Ok(todo);
         }
 
-        [HttpPost(template:"todos")]
+        [HttpPost(template: "todos")]
         public async Task<IActionResult> PostAsync(
             [FromServices] AppDbContext context,
             [FromBody] CreateTodoViewModel model)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest();
 
             var todo = new Todo
@@ -61,15 +61,15 @@ namespace MeuTodo.Controllers
             {
                 await context.Todos.AddAsync(todo);
                 await context.SaveChangesAsync();
-                return Created(uri:$"v1/todos/{todo.Id}", todo);
+                return Created(uri: $"v1/todos/{todo.Id}", todo);
             }
             catch (Exception e)
-            { 
+            {
                 return BadRequest();
             }
         }
 
-        [HttpPut(template:"todos/{id}")]
+        [HttpPut(template: "todos/{id}")]
         public async Task<IActionResult> PutAsync(
             [FromServices] AppDbContext context,
             [FromBody] CreateTodoViewModel model,
@@ -80,8 +80,8 @@ namespace MeuTodo.Controllers
 
             var todo = await context
                 .Todos
-                .FirstOrDefaultAsync(x=> x.Id == id);
-            if(todo == null)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (todo == null)
                 return NotFound();
 
 
@@ -99,5 +99,26 @@ namespace MeuTodo.Controllers
             }
         }
 
+        [HttpDelete(template: "todos/{id}")]
+        public async Task<IActionResult> DeleteAsync(
+            [FromServices] AppDbContext context,
+            [FromRoute] int id)
+        {
+            var todo = await context
+                .Todos
+                .FirstOrDefaultAsync(x=> x.Id == id);
+
+            try
+            {
+                context.Todos.Remove(todo);
+                await context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception)
+            {
+
+                return BadRequest();   
+            }
+        }
     }
 }
