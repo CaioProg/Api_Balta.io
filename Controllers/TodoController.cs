@@ -68,5 +68,36 @@ namespace MeuTodo.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpPut(template:"todos/{id}")]
+        public async Task<IActionResult> PutAsync(
+            [FromServices] AppDbContext context,
+            [FromBody] CreateTodoViewModel model,
+            [FromRoute] int id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var todo = await context
+                .Todos
+                .FirstOrDefaultAsync(x=> x.Id == id);
+            if(todo == null)
+                return NotFound();
+
+
+            try
+            {
+                todo.Title = model.Title;
+
+                context.Todos.Update(todo);
+                await context.SaveChangesAsync();
+                return Ok(todo);
+            }
+            catch (Exception e)
+            {
+                return BadRequest();
+            }
+        }
+
     }
 }
